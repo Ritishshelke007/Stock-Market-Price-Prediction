@@ -1,16 +1,22 @@
-import imp
-from tracemalloc import start
+from turtle import heading
+from urllib import response
 import webbrowser
 
 from matplotlib import ticker
 from matplotlib.ft2font import HORIZONTAL
+from nbformat import write
 import streamlit as st
 import pandas as pd
+import spacy
 #from stock import Stock
 import datetime
 from streamlit_option_menu import option_menu
 from plotly import graph_objs as go
 from st_aggrid import AgGrid
+import requests
+import bs4
+from bs4 import BeautifulSoup
+import feedparser
 
 
 import yfinance as yf
@@ -24,7 +30,13 @@ st.set_page_config(
         page_icon="chart_with_upwards_trend",
         layout="wide",
     )
-
+st.markdown("""
+<style>
+.big-font {
+    font-size:18px !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # side bar menus
 with st.sidebar:
@@ -40,10 +52,129 @@ TODAY = datetime.date.today().strftime("%Y-%m-%d")
 if selected == "Home":
     selected2 = option_menu(
         menu_title='',
-        options=['Recent','Buzz News'],
+        options=['Recent','Buzzing News⚡'],
         icons=['rss-fill','newspaper'],
         orientation="horizontal",
                 )
+
+    if selected2 == "Buzzing News⚡":
+            st.header("Today's Trending Market News 📢")
+            # resp = requests.get("https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms")
+            # #st.write(resp)
+            # soup = BeautifulSoup(resp.content, features='xml')
+            # headlines = soup.findAll('title')
+            # #st.header(headlines)
+            nlp = spacy.load("en_core_web_sm")
+
+
+                # stocks_df = pd.read_csv("ind_nifty50list.csv")
+                # for title in headings:
+                #     doc = nlp(title.text)
+                #     for ent in doc.ents:
+                #         try:
+                #             if stocks_df['Company Name'].str.contains(ent.text).sum():
+                #                 symbol = stocks_df[stocks_df['Company Name'].str.contains(ent.text)]['Symbol'].values[0]
+                #                 org_name = stocks_df[stocks_df['Company Name'].str.contains(ent.text)]['Company Name'].values[0]
+
+                #                 #sending yfinance symbol
+                #                 stock_info = yf.Ticker(symbol+".NS").info
+
+
+
+                #                 stock_info_dict['Org'].append(org_name)
+                #                 stock_info_dict['Symbol'].append(symbol)
+                #                 stock_info_dict['currentPrice'].append(stock_info['currentPrice'])
+                #                 stock_info_dict['dayHigh'].append(stock_info['dayHigh'])
+                #                 stock_info_dict['dayLow'].append(stock_info['dayLow'])
+                #                 stock_info_dict['forwardPE'].append(stock_info['forwardPE'])
+                #                 stock_info_dict['dividendYield'].append(stock_info['dividendYield'])
+                #             else:
+                #                 pass
+                #         except:
+                #             pass
+
+                # output_df = pd.DataFrame(stock_info_dict)
+                # return output_df
+            #user_input = st.text_input("Add your RSS link here : ","https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms")
+            #get finance headlines
+
+
+            # def extract_text_from_rss():
+            #     headings = []
+            #     r = requests.get("https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms")
+            #     soup = BeautifulSoup(r.content, features='lxml')
+            #     headings = soup.findAll('title')
+            #     description = soup.findAll('description')
+            #     return headings
+
+            
+            def generate_stock_info(headings):
+                stock_info_dict = {
+                    'Org': [],
+                    'Symbol': [],
+                    'currentPrice': [],
+                    'dayHigh': [],
+                    'dayLow': [],
+                    'forwardPE': [],
+                    'dividendYield': []
+                }
+
+
+            #if feedparser does not work then will do this 
+
+            # r = requests.get("https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms")
+            # soup = BeautifulSoup(r.content, features='lxml')
+            # headings = soup.findAll('title')
+            # links = soup.findAll('link')
+            # for heading in headings:
+            #     st.markdown("* "+heading.text)
+
+            #idea of using feedparser
+            url = "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms"
+            f = feedparser.parse(url)
+           
+            with st.expander('Expand for financial stock news'):
+                for entry in f.entries:
+                    # st.write("* ",entry.title)
+                    
+
+                    # st.caption(entry.link)
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.write("* ",entry.title)
+                        
+                        #st.markdown('<p class="big-font">*  !!</p>', unsafe_allow_html=True)
+                    with col2:
+                        st.write(entry.link)
+
+
+
+            #fin_headings = extract_text_from_rss()
+
+            #output 
+            # output_df = generate_stock_info(fin_headings)
+            # output_df.drop_duplicates(inplace=True)
+            # st.dataframe(output_df)
+
+            ##display headlines
+            # with st.expander("Expand for financial stock news "):
+            #     for heading in fin_headings:
+            #         st.markdown("* "+heading.text)
+            #         for desc in fin_headings:
+            #             st.markdown()
+                    
+
+
+
+
+                            
+
+
+        
+
+
+
+
 
 
 # for Nifty 50
@@ -60,8 +191,8 @@ if selected == "Nifty 50":
         st.header("PLease Select stock before Proceeding further")
 
     tickerData = yf.Ticker(stocks_symbol)
-    n_years = st.slider("Years of Prediction : ", 1, 4)
-    period = n_years * 365
+    #n_years = st.slider("Years of Prediction : ", 1, 4)
+    #period = n_years * 365
 
 
     @st.cache
