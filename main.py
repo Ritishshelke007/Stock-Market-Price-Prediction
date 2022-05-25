@@ -1,3 +1,4 @@
+import json
 from turtle import heading
 from urllib import response
 import webbrowser
@@ -5,6 +6,7 @@ import webbrowser
 from matplotlib import ticker
 from matplotlib.ft2font import HORIZONTAL
 from nbformat import write
+from simplejson import load
 import streamlit as st
 import pandas as pd
 import spacy
@@ -17,7 +19,7 @@ import requests
 import bs4
 from bs4 import BeautifulSoup
 import feedparser
-
+from streamlit_lottie import st_lottie
 
 import yfinance as yf
 # from prophet import Prophet
@@ -38,6 +40,15 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+
+
+#hide side navigation
+st.markdown(""" <style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+</style> """, unsafe_allow_html=True)
+
+
 # side bar menus
 with st.sidebar:
     selected = option_menu(
@@ -47,6 +58,12 @@ with st.sidebar:
     )
 START = "2015-1-1"
 TODAY = datetime.date.today().strftime("%Y-%m-%d")
+
+#initialize session state
+if "load_state" not in st.session_state:
+    st.session_state.load_state = False
+
+    
 
 # for Home page
 if selected == "Home":
@@ -132,20 +149,15 @@ if selected == "Home":
             #idea of using feedparser
             url = "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms"
             f = feedparser.parse(url)
+            
            
             with st.expander('Expand for financial stock news'):
                 for entry in f.entries:
                     # st.write("* ",entry.title)
-                    
-
-                    # st.caption(entry.link)
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        st.write("* ",entry.title)
-                        
+                    st.write("* ",entry.title)
+                    #st.caption(entry.description)
                         #st.markdown('<p class="big-font">*  !!</p>', unsafe_allow_html=True)
-                    with col2:
-                        st.write(entry.link)
+                    st.write(entry.link)
 
 
 
@@ -328,6 +340,34 @@ if selected == "Nifty 50":
 
 #     # START_DATE_ = st.date_input("From", today)
 #     # END_DATE_ = st.date_input("To", today)
+
+
+if selected == 'Profile':
+    def load_lottiefile(filepath: str):
+        with open(filepath, "r") as f:
+            return json.load(f)
+
+    def load_lottieurl(url : str):
+        r = requests.get(url)
+        if r.status_code != 200:
+            return None
+        return r.json()
+
+    lottie_hello = load_lottieurl("https://assets8.lottiefiles.com/packages/lf20_3vbOcw.json")
+
+    st.markdown("<h1 style='text-align: center; color: white;'>Your Profile</h1>", unsafe_allow_html=True)
+    st_lottie(
+        lottie_hello,
+        speed=1,
+        reverse=False,
+            loop=True,
+            quality="low",
+        height=400,
+        width=500,
+
+    )
+
+    #st_lottie(lottie_hello, key="Hello")
 
  
 
