@@ -7,7 +7,11 @@ import requests
 from streamlit_lottie import st_lottie
 
 #set page in wide mode
-st. set_page_config(layout="wide")
+st.set_page_config(
+        page_title="Login to BuyTheDip",
+        page_icon="chart_with_upwards_trend",
+        layout="wide",
+    )
 
 
 def load_image(image_file):

@@ -28,7 +28,7 @@ from plotly import graph_objs as go
 
 # st.write("Hello Streamlit")
 st.set_page_config(
-        page_title="Search and Predict",
+        page_title="BuyTheDip!",
         page_icon="chart_with_upwards_trend",
         layout="wide",
     )
@@ -76,11 +76,7 @@ if selected == "Home":
 
     if selected2 == "Buzzing News⚡":
             st.header("Today's Trending Market News 📢")
-            # resp = requests.get("https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms")
-            # #st.write(resp)
-            # soup = BeautifulSoup(resp.content, features='xml')
-            # headlines = soup.findAll('title')
-            # #st.header(headlines)
+
             nlp = spacy.load("en_core_web_sm")
 
 
@@ -116,14 +112,6 @@ if selected == "Home":
             #get finance headlines
 
 
-            # def extract_text_from_rss():
-            #     headings = []
-            #     r = requests.get("https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms")
-            #     soup = BeautifulSoup(r.content, features='lxml')
-            #     headings = soup.findAll('title')
-            #     description = soup.findAll('description')
-            #     return headings
-
             
             def generate_stock_info(headings):
                 stock_info_dict = {
@@ -137,14 +125,6 @@ if selected == "Home":
                 }
 
 
-            #if feedparser does not work then will do this 
-
-            # r = requests.get("https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms")
-            # soup = BeautifulSoup(r.content, features='lxml')
-            # headings = soup.findAll('title')
-            # links = soup.findAll('link')
-            # for heading in headings:
-            #     st.markdown("* "+heading.text)
 
             #idea of using feedparser
             url = "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms"
@@ -192,7 +172,7 @@ if selected == "Home":
 # for Nifty 50
 if selected == "Nifty 50":
 
-    st.title("Know Your Stock")
+    st.title("Know Your Nifty 50 Stock")
     #st.write("Query Parameters")
 
 
@@ -257,90 +237,70 @@ if selected == "Nifty 50":
     plot_chart_for_range()
 
 
-# for crypto
-# if selected=="Cryptocurrency":
-#     st.header("Know more about Cryptocurrency")
-#     #st.button('Check Current Prices')
-#     url = 'https://www.coinbase.com/price'
 
-#     if st.button('Check Current Prices'):
-#         webbrowser.open_new_tab(url)
+# bank nifty 
 
+if selected =='BankNifty':
+    st.title("Know Your Bank Nifty Stock")
+    bank_stock_list = pd.read_csv('https://raw.githubusercontent.com/Ritishshelke007/Ritishshelke007/main/ind_niftybank.csv')
+    st.subheader("Select Bank Stock")
+    bank_stocks_symbol = st.selectbox("", bank_stock_list+".NS")
+    if bank_stocks_symbol=="Select Your Stock":
+        st.header("PLease Select stock before Proceeding further")
 
-#     crypto_list = pd.read_csv('https://raw.githubusercontent.com/Ritishshelke007/Ritishshelke007/main/crypto.txt')
-#     st.subheader("Select Crypto")
-#     crypto_symbol = st.selectbox("", crypto_list)
-
-#     tickerData2 = yf.Ticker(crypto_symbol)
-#     n_years = st.slider("Years of Prediction : ", 1, 4)
-#     period = n_years * 365
+    tickerData = yf.Ticker(bank_stocks_symbol)
+    #n_years = st.slider("Years of Prediction : ", 1, 4)
+    #period = n_years * 365
 
 
-#     @st.cache
-#     def load_crypto_data(ticker2):
-#         data2 = yf.download(ticker2, START, TODAY)
-#         data2.reset_index(inplace=True)
-#         return data2
+    @st.cache
+    def load_data(ticker):
+        data = yf.download(ticker, START, TODAY)
+        data.reset_index(inplace=True)
+        return data
 
 
-#     data2_load_state = st.text("Load data...")
-#     data2 = load_crypto_data(crypto_symbol)
-#     data2_load_state.text("Loading Data... Please wait for a while!")
+    data_load_state = st.text("Load data...")
+    data = load_data(bank_stocks_symbol)
+    data_load_state.text("Loading Data... Please wait for a while!")
 
-#     st.subheader("About Coin")
-#     string_logo = '<img src=%s>' % tickerData2.info['logo_url']
-#     st.markdown(string_logo, unsafe_allow_html=True)
+    st.subheader("About Company")
+    string_logo = '<img src=%s>' % tickerData.info['logo_url']
+    st.markdown(string_logo, unsafe_allow_html=True)
 
-#     # string_name = tickerData2.info['longName']
-#     # st.header('**%s**' % string_name)
+    string_name = tickerData.info['longName']
+    st.header('**%s**' % string_name)
 
-#     # string_summary = tickerData2.info['longBusinessSummary']
-#     # st.info(string_summary)
+    string_summary = tickerData.info['longBusinessSummary']
+    st.info(string_summary)
 
-#     today = date.today()
+    today = datetime.date.today()
 
-#     st.header('Price History')
-#     start_date = st.date_input(
-#         "From",
-#         today
-#     )
+    st.header('Price History')
+    start_date = st.date_input(
+        "From",
+        today
+    )
 
-#     end_date = st.date_input(
-#         "To",
-#         today
-#     )
+    end_date = st.date_input(
+        "To",
+        today
+    )
 
-#     tickerDf2 = tickerData2.history(period='1d', start=start_date, end=end_date)
-#     st.write(tickerDf2)
+    tickerDf = tickerData.history(period='1d', start=start_date, end=end_date)
+    st.write(tickerDf)
 
-#     st.subheader("Coin Price since 2015")
+    st.subheader("Share Price since 2015")
+    def plot_chart_for_range():
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=data['Date'], y=data['Open'], name='stock_open'))
+        fig.add_trace(go.Scatter(x=data['Date'], y=data['Close'], name='stock_close'))
+        fig.layout.update(title_text="Time Series Data",xaxis_rangeslider_visible=True)
+        fig.update_layout(xaxis=dict(showgrid=False),
+                          yaxis=dict(showgrid=False))
+        st.plotly_chart(fig)
 
-
-#     def plot_chart_for_crypto():
-#         fig2 = go.Figure()
-#         fig2.add_trace(go.Scatter(x=data2['Date'], y=data2['Open'], name='stock_open'))
-#         fig2.add_trace(go.Scatter(x=data2['Date'], y=data2['Close'], name='stock_close'))
-#         fig2.layout.update(title_text="Time Series Data", xaxis_rangeslider_visible=True)
-#         fig2.update_layout(xaxis=dict(showgrid=False),
-#                           yaxis=dict(showgrid=False))
-#         st.plotly_chart(fig2)
-
-
-#     plot_chart_for_crypto()
-
-# if selected=="Price Prediction":
-#     # ------ layout setting---------------------------
-#     window_selection_c = st.sidebar.container() # create an empty container in the sidebar
-#     window_selection_c.markdown("## Insights") # add a title to the sidebar container
-#     sub_columns = window_selection_c.columns(2) #Split the container into two columns for start and end date
-#     # ----------Time window selection-----------------
-#     YESTERDAY=datetime.date.today()-datetime.timedelta(days=1)
-
-#     DEFAULT_START=YESTERDAY - datetime.timedelta(days=700)
-
-#     # START_DATE_ = st.date_input("From", today)
-#     # END_DATE_ = st.date_input("To", today)
-
+    plot_chart_for_range()
 
 if selected == 'Profile':
     def load_lottiefile(filepath: str):
