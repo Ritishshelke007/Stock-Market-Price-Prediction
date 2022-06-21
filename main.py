@@ -22,7 +22,7 @@ import feedparser
 from streamlit_lottie import st_lottie
 
 import yfinance as yf
-# from prophet import Prophet
+#from prophet import Prophet
 # from prophet.plot import plot_plotly
 from plotly import graph_objs as go
 
@@ -328,6 +328,9 @@ if selected == 'Profile':
     )
 
     #st_lottie(lottie_hello, key="Hello")
+
+if selected == "Price Prediction":
+    webbrowser.open("https://stock-predict-app.herokuapp.com/")
 
  
 
