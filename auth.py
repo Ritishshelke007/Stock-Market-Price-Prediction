@@ -9,8 +9,11 @@ from streamlit_lottie import st_lottie
 import requests
 from streamlit_option_menu import option_menu
 
-
-
+st.set_page_config(
+        page_title="ByTheDip!",
+        page_icon="chart_with_upwards_trend",
+        layout="wide",
+    )
 
 
 #configuration key 
@@ -56,7 +59,7 @@ def load_image(image_file):
 col1 , col2 = st.columns([2,1])
 
 with col1:
-    st.header("Welcome to BuyTheDip!")
+    st.header("Welcome to ByTheDip!")
     st.caption("Predict the Future!")
 
     def load_lottiefile(filepath: str):
@@ -79,7 +82,6 @@ with col1:
         quality="low",
         height=400,
         width=500,
-
     )
 
 
@@ -137,9 +139,11 @@ with col2:
         password= st.text_input('Enter password',type="password")
         submit = st.button('Log In')
       # login= st.sidebar.button('Login')
+
         if submit:
           user= auth.sign_in_with_email_and_password(email,password)
-          webbrowser.open("http://localhost:8501/")
-        
-          st.success('Logged in')
+          webbrowser.open("http://localhost:8502/")
+        #   st.success('Logged in')
+        #   st.markdown('<a href="https://stock-predict-app.herokuapp.com/" target="_self">Click to continue</a>', unsafe_allow_html=True)
           st.balloons()
+
